@@ -52,6 +52,10 @@ module.exports = {
         "primary-fixed-dim": "#b8c3ff",
         "secondary-container": "#6001d1",
         "on-error": "#690005",
+        "error-red": "#ffb4ab",
+        "success-green": "#22c55e",
+        "outline-muted": "rgba(255, 255, 255, 0.1)",
+        "surface-glass": "rgba(45, 52, 73, 0.4)",
       },
       fontFamily: {
         sans: ["Inter", "sans-serif"],
