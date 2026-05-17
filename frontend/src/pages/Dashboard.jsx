@@ -7,7 +7,7 @@ import API from "../services/api";
 const NAV_ITEMS = [
   { icon: "dashboard", label: "Dashboard", href: "/dashboard", active: true, filled: true },
   { icon: "radar", label: "Live Feed", href: "/livefeed" },
-  { icon: "notification_important", label: "Alerts", href: "/alerts", badge: 12 },
+  { icon: "notification_important", label: "Alerts", href: "/alerts" },
   { icon: "videocam", label: "Camera Control", href: "/camera" },
   { icon: "tune", label: "Settings", href: "#" },
 ];

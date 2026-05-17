@@ -7,7 +7,7 @@ import API from "../services/api";
 const NAV_ITEMS = [
   { icon: "grid_view", label: "Dashboard", href: "/dashboard" },
   { icon: "radar", label: "Live Feed", href: "/livefeed" },
-  { icon: "notification_important", label: "Alerts", href: "/alerts", badge: 12 },
+  { icon: "notification_important", label: "Alerts", href: "/alerts" },
   { icon: "videocam", label: "Camera Control", href: "/camera", active: true },
   { icon: "tune", label: "Settings", href: "#" },
 ];
@@ -173,10 +173,10 @@ const CameraControl = () => {
 
   const [selectedCam, setSelectedCam]         = useState("CAM-001");
   const [activeEventType, setActiveEventType] = useState("Vehicle Detected");
-  const [plate, setPlate]                     = useState("ABC-1234");
-  const [speed, setSpeed]                     = useState("42");
-  const [severity, setSeverity]               = useState("Medium (Standard)");
-  const [vehicleCount, setVehicleCount]       = useState("12");
+  const [plate, setPlate]                     = useState("");
+  const [speed, setSpeed]                     = useState("");
+  const [severity, setSeverity]               = useState("Low (Routine)");
+  const [vehicleCount, setVehicleCount]       = useState("");
   const [publishing, setPublishing]           = useState(false);
   const [successMsg, setSuccessMsg]           = useState("");
   const [errorMsg, setErrorMsg]               = useState("");
@@ -198,7 +198,7 @@ const CameraControl = () => {
 
   const handlePublish = async () => {
     setSuccessMsg(""); setErrorMsg("");
-    if (!plate) { setErrorMsg("License plate is required."); return; }
+    if (!plate.trim()) { setErrorMsg("License plate is required."); return; }
     try {
       setPublishing(true);
       const payload = {
@@ -339,7 +339,7 @@ const CameraControl = () => {
                     <label className="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider">Precise GPS Location</label>
                     <div className="relative">
                       <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline">location_on</span>
-                      <input className="w-full bg-surface-container-high border border-outline-variant rounded-lg p-3 pl-10 text-sm font-medium text-on-surface-variant outline-none" readOnly type="text" value="40.7128° N, 74.0060° W" />
+                      <input className="w-full bg-surface-container-high border border-outline-variant rounded-lg p-3 pl-10 text-sm font-medium text-on-surface-variant outline-none" readOnly type="text" value={selectedCamera?.location ? `${selectedCamera.location} — Lat/Lng Auto` : "Select a camera to get GPS"} />
                     </div>
                   </div>
                 </div>
