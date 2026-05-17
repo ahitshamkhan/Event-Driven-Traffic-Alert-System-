@@ -1,6 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import useAuth from "../hooks/useAuth";
+import API from "../services/api";
 
 /* ── Sidebar ── */
 const NAV_ITEMS = [
@@ -106,44 +107,68 @@ const TopNav = () => {
   );
 };
 
-/* ── Stat Cards Data ── */
-const STATS = [
-  { icon: "analytics", iconBg: "bg-primary-container/20", iconColor: "text-primary", label: "Total Events Today", value: "1,247", badge: "12%", badgeIcon: "trending_up", badgeColor: "text-success-green bg-success-green/10 border-success-green/20" },
-  { icon: "warning", iconBg: "bg-error-container/20", iconColor: "text-error-red", label: "Active Alerts", value: "23", badge: "4%", badgeIcon: "trending_up", badgeColor: "text-error-red bg-error-container/50 border-error-red/20" },
-  { icon: "videocam", iconBg: "bg-secondary-container/20", iconColor: "text-secondary", label: "Cameras Online", value: "12/12", badge: "STABLE", badgeIcon: null, badgeColor: "text-outline bg-surface-container-high" },
-  { icon: "gavel", iconBg: "bg-tertiary-container/20", iconColor: "text-tertiary", label: "Violations Today", value: "89", badge: "8%", badgeIcon: "trending_down", badgeColor: "text-success-green bg-success-green/10 border-success-green/20" },
-];
-
-/* ── Feed Items ── */
-const FEED_ITEMS = [
-  { icon: "car_crash", iconBg: "bg-error-container/20 text-error-red", border: "border-error-red", title: "Major Accident - 5th & Main", time: "2 MIN AGO", desc: "Multi-vehicle collision reported. Emergency services dispatched. Traffic diverted to 6th Avenue.", tags: [{ text: "High Priority", cls: "bg-error-container text-on-error-container" }, { text: "Zone 4", cls: "bg-surface-container-highest text-on-surface-variant" }] },
-  { icon: "traffic_cone", iconBg: "bg-primary-container/20 text-primary", border: "border-primary-container", title: "Road Maintenance Start", time: "15 MIN AGO", desc: "Scheduled maintenance begun on Broadway bridge. Right lane closed for 4 hours.", tags: [{ text: "Scheduled", cls: "bg-primary-fixed text-on-primary-fixed-variant" }, { text: "Zone 1", cls: "bg-surface-container-highest text-on-surface-variant" }] },
-  { icon: "videocam", iconBg: "bg-tertiary-container/20 text-tertiary", border: "border-tertiary", title: "Violation Detected: Speeding", time: "28 MIN AGO", desc: "Automated enforcement captured speeding vehicle (84 MPH in 55 MPH zone) at Intersection 12-A.", tags: [{ text: "Violation", cls: "bg-tertiary-fixed text-on-tertiary-fixed-variant" }, { text: "Zone 2", cls: "bg-surface-container-highest text-on-surface-variant" }] },
-];
-
-/* ── System Status ── */
+/* ── System Status (static — infra is always shown) ── */
 const SYSTEMS = [
-  { icon: "storage", name: "Database Clusters" },
-  { icon: "videocam", name: "CCTV Streaming Engine" },
+  { icon: "storage",       name: "Database Clusters" },
+  { icon: "videocam",      name: "CCTV Streaming Engine" },
   { icon: "satellite_alt", name: "IoT Telemetry Uplink" },
-  { icon: "map", name: "GIS Geofencing API" },
-];
-
-/* ── Chart Data ── */
-const CHART_DAYS = [
-  { day: "Mon", events: "65%", critical: "12%" },
-  { day: "Tue", events: "78%", critical: "22%" },
-  { day: "Wed", events: "92%", critical: "35%" },
-  { day: "Thu", events: "68%", critical: "28%" },
-  { day: "Fri", events: "85%", critical: "18%" },
-  { day: "Sat", events: "42%", critical: "8%" },
-  { day: "Sun", events: "38%", critical: "5%" },
+  { icon: "map",           name: "GIS Geofencing API" },
 ];
 
 /* ══════════════════════════════════════════
    Main Dashboard Page
    ══════════════════════════════════════════ */
-const Dashboard = () => (
+const Dashboard = () => {
+  const [events, setEvents]   = useState([]);
+  const [eventStats, setEventStats] = useState(null);
+  const [alerts, setAlerts]   = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const load = async () => {
+      try {
+        const [evRes, alRes] = await Promise.all([
+          API.get("/events", { params: { limit: 5 } }),
+          API.get("/alerts"),
+        ]);
+        const evRaw = evRes.data?.data;
+        const evList = Array.isArray(evRaw) ? evRaw : evRaw?.data || [];
+        setEvents(evList.slice(0, 5));
+
+        const alRaw = alRes.data?.data;
+        const alList = Array.isArray(alRaw) ? alRaw : alRaw?.data || [];
+        setAlerts(alList);
+
+        // Try to get event type stats
+        try {
+          const stRes = await API.get("/events/stats");
+          setEventStats(stRes.data?.data || null);
+        } catch {}
+      } catch {}
+      finally { setLoading(false); }
+    };
+    load();
+  }, []);
+
+  const totalEvents  = eventStats ? Object.values(eventStats).reduce((s, v) => s + v, 0) : events.length;
+  const pendingAlert = alerts.filter((a) => a.status === "PENDING").length;
+  const violations   = eventStats?.SPEED_VIOLATION || 0;
+
+  const STATS = [
+    { icon: "analytics", iconBg: "bg-primary-container/20", iconColor: "text-primary",    label: "Total Events",   value: loading ? "—" : totalEvents,  badge: "Live",   badgeIcon: null,           badgeColor: "text-success-green bg-success-green/10 border-success-green/20" },
+    { icon: "warning",   iconBg: "bg-error-container/20",   iconColor: "text-error-red",  label: "Active Alerts", value: loading ? "—" : pendingAlert, badge: "PENDING",badgeIcon: null,           badgeColor: "text-error-red bg-error-container/50 border-error-red/20" },
+    { icon: "videocam",  iconBg: "bg-secondary-container/20",iconColor: "text-secondary", label: "Cameras Online",value: "12/12",                       badge: "STABLE", badgeIcon: null,           badgeColor: "text-outline bg-surface-container-high" },
+    { icon: "gavel",     iconBg: "bg-tertiary-container/20", iconColor: "text-tertiary",  label: "Violations",    value: loading ? "—" : violations,   badge: "Today", badgeIcon: null,           badgeColor: "text-tertiary bg-tertiary-container/30" },
+  ];
+
+  const EVENT_TYPE_ICON = {
+    SPEED_VIOLATION:  { icon: "speed",         iconBg: "bg-error-container/20 text-error-red",       border: "border-error-red" },
+    VEHICLE_DETECTED: { icon: "directions_car", iconBg: "bg-primary-container/20 text-primary",      border: "border-primary-container" },
+    CONGESTION_ALERT: { icon: "warning",        iconBg: "bg-tertiary-container/20 text-tertiary",    border: "border-tertiary" },
+    TRAFFIC_CLEARED:  { icon: "check_circle",   iconBg: "bg-success-green/10 text-success-green",   border: "border-success-green" },
+  };
+
+  return (
   <div className="bg-background text-on-background min-h-screen">
     <Sidebar />
     <TopNav />
@@ -187,28 +212,40 @@ const Dashboard = () => (
                   <span className="w-1.5 h-1.5 bg-success-green rounded-full pulse-live"></span> Live
                 </div>
               </div>
-              <button className="text-primary text-[14px] leading-[20px] tracking-[0.05em] font-semibold hover:underline">View All</button>
+              <a href="/livefeed" className="text-primary text-[14px] leading-[20px] tracking-[0.05em] font-semibold hover:underline">View All</a>
             </div>
             <div className="p-4 space-y-4 overflow-y-auto max-h-[440px]">
-              {FEED_ITEMS.map((f) => (
-                <div key={f.title} className={`flex items-start gap-4 p-4 bg-surface-container-high/40 rounded-xl border-l-4 ${f.border} hover:bg-surface-container-high transition-colors`}>
-                  <div className={`${f.iconBg} p-2 rounded-lg`}>
-                    <span className="material-symbols-outlined">{f.icon}</span>
-                  </div>
-                  <div className="flex-1">
-                    <div className="flex justify-between items-start mb-1">
-                      <h4 className="text-[14px] leading-[20px] tracking-[0.05em] font-semibold text-on-surface">{f.title}</h4>
-                      <span className="text-[10px] text-outline font-semibold">{f.time}</span>
-                    </div>
-                    <p className="text-[16px] leading-[24px] text-sm text-on-surface-variant mb-2">{f.desc}</p>
-                    <div className="flex gap-2">
-                      {f.tags.map((t) => (
-                        <span key={t.text} className={`px-2 py-0.5 ${t.cls} text-[10px] font-bold rounded uppercase`}>{t.text}</span>
-                      ))}
-                    </div>
-                  </div>
+              {loading && (
+                <div className="flex items-center justify-center py-12 gap-2 text-on-surface-variant">
+                  <span className="material-symbols-outlined animate-spin">sync</span>
+                  <span className="text-sm">Loading events...</span>
                 </div>
-              ))}
+              )}
+              {!loading && events.length === 0 && (
+                <div className="flex flex-col items-center justify-center py-12 text-on-surface-variant gap-2">
+                  <span className="material-symbols-outlined text-4xl text-outline">radar</span>
+                  <p className="text-sm font-semibold">No events yet</p>
+                  <p className="text-xs">Publish a camera event from Camera Control.</p>
+                </div>
+              )}
+              {!loading && events.map((ev) => {
+                const style = EVENT_TYPE_ICON[ev.eventType] || EVENT_TYPE_ICON.VEHICLE_DETECTED;
+                const payload = ev.payload || {};
+                return (
+                  <div key={ev._id || ev.eventId} className={`flex items-start gap-4 p-4 bg-surface-container-high/40 rounded-xl border-l-4 ${style.border} hover:bg-surface-container-high transition-colors`}>
+                    <div className={`${style.iconBg} p-2 rounded-lg`}>
+                      <span className="material-symbols-outlined">{style.icon}</span>
+                    </div>
+                    <div className="flex-1">
+                      <div className="flex justify-between items-start mb-1">
+                        <h4 className="text-[14px] leading-[20px] tracking-[0.05em] font-semibold text-on-surface">{ev.eventType?.replace(/_/g, " ")}</h4>
+                        <span className="text-[10px] text-outline font-semibold">{new Date(ev.timestamp).toLocaleTimeString()}</span>
+                      </div>
+                      <p className="text-sm text-on-surface-variant mb-2">{ev.source} {payload.vehicleNumber ? `— ${payload.vehicleNumber}` : ""} {payload.speed ? `| ${payload.speed} km/h` : ""}</p>
+                    </div>
+                  </div>
+                );
+              })}
             </div>
           </div>
 
@@ -280,15 +317,28 @@ const Dashboard = () => (
                 {["1500", "1200", "900", "600", "300", "0"].map((v) => (<span key={v}>{v}</span>))}
               </div>
               {/* Bars */}
-              {CHART_DAYS.map((d) => (
-                <div key={d.day} className="flex-1 flex flex-col items-center group relative h-full">
-                  <div className="w-full max-w-[48px] flex items-end justify-center gap-1 h-[280px] relative">
-                    <div className="w-full bg-primary-container rounded-t hover:brightness-110 transition-all cursor-pointer" style={{ height: d.events }}></div>
-                    <div className="w-full bg-error-red rounded-t hover:brightness-110 transition-all cursor-pointer" style={{ height: d.critical }}></div>
-                  </div>
-                  <span className="mt-4 text-[11px] font-bold text-outline uppercase">{d.day}</span>
+              {/* Chart — show real event type distribution or empty state */}
+              {eventStats ? (
+                Object.entries(eventStats).map(([type, count]) => {
+                  const max = Math.max(...Object.values(eventStats), 1);
+                  const pct = Math.round((count / max) * 100);
+                  return (
+                    <div key={type} className="flex-1 flex flex-col items-center group relative h-full">
+                      <div className="w-full max-w-[48px] flex items-end justify-center h-[280px]">
+                        <div className="w-full bg-primary-container rounded-t transition-all" style={{ height: `${pct}%` }}></div>
+                      </div>
+                      <span className="mt-4 text-[9px] font-bold text-outline uppercase text-center">{type.replace(/_/g, " ")}</span>
+                      <span className="text-[10px] text-primary font-bold">{count}</span>
+                    </div>
+                  );
+                })
+              ) : (
+                <div className="w-full flex flex-col items-center justify-center h-[280px] text-on-surface-variant gap-2">
+                  <span className="material-symbols-outlined text-4xl text-outline">bar_chart</span>
+                  <p className="text-sm">No event data yet. Publish events to see chart.</p>
                 </div>
-              ))}
+              )}
+
             </div>
           </div>
         </div>
@@ -334,6 +384,7 @@ const Dashboard = () => (
       </div>
     </div>
   </div>
-);
+  );
+};
 
 export default Dashboard;
