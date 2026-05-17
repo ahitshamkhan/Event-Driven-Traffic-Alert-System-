@@ -5,6 +5,7 @@ import useTheme from "../hooks/useTheme";
 import API from "../services/api";
 import EmergencyModal from "../components/EmergencyModal";
 import SettingsModal from "../components/SettingsModal";
+import UserProfileDropdown from "../components/UserProfileDropdown";
 
 /* ── Sidebar ── */
 const NAV_ITEMS = [
@@ -82,11 +83,7 @@ const Sidebar = () => {
 /* ── Top Nav ── */
 const TopNav = () => {
   const [search, setSearch] = useState("");
-  const { user } = useAuth();
   const { isDark, toggleTheme } = useTheme();
-  const initials = user?.name
-    ? user.name.split(" ").map((n) => n[0]).join("").toUpperCase().slice(0, 2)
-    : "?";
   return (
     <header className="fixed top-0 right-0 w-[calc(100%-240px)] h-[64px] bg-surface border-b border-outline-variant flex justify-between items-center px-8 z-40">
       <div className="flex items-center flex-1 max-w-xl">
@@ -103,15 +100,7 @@ const TopNav = () => {
           <span className="material-symbols-outlined">{isDark ? "light_mode" : "dark_mode"}</span>
         </button>
         <div className="h-8 w-[1px] bg-outline-variant mx-2"></div>
-        <div className="flex items-center gap-3">
-          <div className="text-right">
-            <p className="text-xs font-bold text-on-surface">{user?.name || "Guest"}</p>
-            <p className="text-[10px] text-outline uppercase font-semibold">{user?.role || "—"}</p>
-          </div>
-          <div className="w-10 h-10 rounded-full bg-primary-container border border-outline-variant flex items-center justify-center">
-            <span className="text-on-primary-container font-bold text-sm">{initials}</span>
-          </div>
-        </div>
+        <UserProfileDropdown />
       </div>
     </header>
   );

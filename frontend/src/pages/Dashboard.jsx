@@ -5,6 +5,7 @@ import useTheme from "../hooks/useTheme";
 import API from "../services/api";
 import EmergencyModal from "../components/EmergencyModal";
 import SettingsModal from "../components/SettingsModal";
+import UserProfileDropdown from "../components/UserProfileDropdown";
 
 /* ── Sidebar ── */
 const NAV_ITEMS = [
@@ -79,11 +80,7 @@ const Sidebar = () => {
 /* ── Top Nav ── */
 const TopNav = () => {
   const [search, setSearch] = useState("");
-  const { user } = useAuth();
   const { isDark, toggleTheme } = useTheme();
-  const initials = user?.name
-    ? user.name.split(" ").map((n) => n[0]).join("").toUpperCase().slice(0, 2)
-    : "?";
   return (
     <header className="fixed top-0 right-0 w-[calc(100%-240px)] h-[64px] bg-surface-container-lowest border-b border-outline-muted shadow-none flex justify-between items-center px-[24px] z-40">
       <div className="flex items-center gap-4 flex-1">
@@ -96,25 +93,11 @@ const TopNav = () => {
         <button className="hover:bg-surface-container-high rounded-full p-2 transition-transform duration-150 active:scale-95">
           <span className="material-symbols-outlined text-on-surface-variant">notifications</span>
         </button>
-        <button
-          onClick={toggleTheme}
-          title={isDark ? "Switch to Light Mode" : "Switch to Dark Mode"}
-          className="hover:bg-surface-container-high rounded-full p-2 transition-transform duration-150 active:scale-95"
-        >
-          <span className="material-symbols-outlined text-on-surface-variant">
-            {isDark ? "light_mode" : "dark_mode"}
-          </span>
+        <button onClick={toggleTheme} title={isDark ? "Switch to Light Mode" : "Switch to Dark Mode"} className="hover:bg-surface-container-high rounded-full p-2 transition-transform duration-150 active:scale-95">
+          <span className="material-symbols-outlined text-on-surface-variant">{isDark ? "light_mode" : "dark_mode"}</span>
         </button>
         <div className="h-8 w-[1px] bg-outline-muted mx-2"></div>
-        <div className="flex items-center gap-3 pl-2 cursor-pointer group">
-          <div className="text-right hidden sm:block">
-            <p className="text-[14px] font-semibold text-on-surface">{user?.name || "Guest"}</p>
-            <p className="text-[10px] text-outline uppercase font-semibold">{user?.role || "—"}</p>
-          </div>
-          <div className="w-10 h-10 rounded-full bg-primary-container border-2 border-primary-container flex items-center justify-center">
-            <span className="text-on-primary-container font-bold text-sm">{initials}</span>
-          </div>
-        </div>
+        <UserProfileDropdown />
       </div>
     </header>
   );
