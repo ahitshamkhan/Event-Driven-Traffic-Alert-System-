@@ -58,6 +58,12 @@ const Sidebar = () => {
 /* ── Top Navbar ── */
 const TopNav = () => {
   const [search, setSearch] = useState("");
+  const { user } = useAuth();
+
+  const initials = user?.name
+    ? user.name.split(" ").map((n) => n[0]).join("").toUpperCase().slice(0, 2)
+    : "?";
+
   return (
     <header className="fixed top-0 right-0 w-[calc(100%-240px)] h-[64px] bg-surface-container-lowest border-b border-outline-variant flex justify-between items-center px-[24px] z-40">
       <div className="flex items-center gap-[24px] w-1/2">
@@ -76,11 +82,11 @@ const TopNav = () => {
         <div className="h-8 w-[1px] bg-outline-variant mx-2"></div>
         <div className="flex items-center gap-3 pl-2">
           <div className="text-right">
-            <p className="text-[14px] leading-[20px] tracking-[0.05em] font-semibold text-on-surface leading-tight">Commander Smith</p>
-            <p className="text-[10px] text-on-surface-variant uppercase font-semibold">Duty Officer</p>
+            <p className="text-[14px] font-semibold text-on-surface leading-tight">{user?.name || "Guest"}</p>
+            <p className="text-[10px] text-on-surface-variant uppercase font-semibold">{user?.role || "—"}</p>
           </div>
           <div className="h-10 w-10 rounded-full bg-primary-container flex items-center justify-center overflow-hidden border border-primary/20">
-            <img alt="User profile avatar" className="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBsN1tr4CHHIBnJ9aOOP7K8K6NQ7BVDrwZAOc9m6jq-6fCzRzslsyEJT6FCiioj9_TucszuQyn24oViysofqjWD_5AMgOfm327N5j5HZIG77bV8P4QfBof7xl4CB3erUkBtWG-CHmce8Qwk-TxQX9W8NjjYxgKFf7GcfCd2vojSdOxJi_sqy8OYHeb7obwsW3uzPCcFiEeyqgBomfr0ghC7-R_ju5IIJDzxt89TfY5QFuSO_5NpJuCPfm1stOnl_3-Hw-WLGCfSBXU" />
+            <span className="text-on-primary-container font-bold text-sm">{initials}</span>
           </div>
         </div>
       </div>
