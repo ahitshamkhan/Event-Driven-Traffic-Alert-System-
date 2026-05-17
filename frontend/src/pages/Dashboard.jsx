@@ -72,6 +72,10 @@ const Sidebar = () => {
 /* ── Top Nav ── */
 const TopNav = () => {
   const [search, setSearch] = useState("");
+  const { user } = useAuth();
+  const initials = user?.name
+    ? user.name.split(" ").map((n) => n[0]).join("").toUpperCase().slice(0, 2)
+    : "?";
   return (
     <header className="fixed top-0 right-0 w-[calc(100%-240px)] h-[64px] bg-surface-container-lowest border-b border-outline-muted shadow-none flex justify-between items-center px-[24px] z-40">
       <div className="flex items-center gap-4 flex-1">
@@ -90,10 +94,12 @@ const TopNav = () => {
         <div className="h-8 w-[1px] bg-outline-muted mx-2"></div>
         <div className="flex items-center gap-3 pl-2 cursor-pointer group">
           <div className="text-right hidden sm:block">
-            <p className="text-[14px] leading-[20px] tracking-[0.05em] font-semibold text-sm text-on-surface">Chief Oper. Miller</p>
-            <p className="text-[10px] text-outline uppercase font-semibold">Duty Officer</p>
+            <p className="text-[14px] font-semibold text-on-surface">{user?.name || "Guest"}</p>
+            <p className="text-[10px] text-outline uppercase font-semibold">{user?.role || "—"}</p>
           </div>
-          <img alt="User profile avatar" className="w-10 h-10 rounded-full border-2 border-primary-container" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDhe5jZbKq92w0O3865ezQAjRCrZmYTwf-yYnrEswFMNUD9tG70es4mjvbqnrGIAUC2AIw8M4znt0laB71lOvcK9rtcLOGhe4dj98mpcHA_2JRDDXsrLrsHXRNit6O0FHDM3G8GEIqfRWVon5fpomUJNSCulB7zbt6gcXjBBmLa8oe2mWrg5GY4hsl3PVS5MiM5KfePpzlXfwfDfiTVwjC9yuBv7ocZX4OXRLDNfcPM1Iw8GqHl2RVEHmsXwu_OxbJZlcrNwvDAa4s" />
+          <div className="w-10 h-10 rounded-full bg-primary-container border-2 border-primary-container flex items-center justify-center">
+            <span className="text-on-primary-container font-bold text-sm">{initials}</span>
+          </div>
         </div>
       </div>
     </header>
@@ -156,7 +162,7 @@ const Dashboard = () => (
             <div key={s.label} className="bg-surface-container p-5 rounded-xl border border-outline-muted shadow-sm flex flex-col gap-2">
               <div className="flex justify-between items-start">
                 <div className={`p-2 ${s.iconBg} rounded-lg`}>
-                  <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}><span className={s.iconColor}>{s.icon}</span></span>
+                  <span className={`material-symbols-outlined ${s.iconColor}`} style={{ fontVariationSettings: "'FILL' 1" }}>{s.icon}</span>
                 </div>
                 <span className={`${s.badgeColor} flex items-center text-[10px] font-semibold px-2 py-0.5 rounded-full border`}>
                   {s.badgeIcon && <span className="material-symbols-outlined text-[14px]">{s.badgeIcon}</span>} {s.badge}
