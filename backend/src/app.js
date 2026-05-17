@@ -28,11 +28,11 @@ app.get('/', (req, res) => {
   });
 });
 
-// ── API Routes (will be added in Phase 5) ─────────────────
-// app.use('/api/auth',    require('./routes/auth.routes'));
-// app.use('/api/camera',  require('./routes/camera.routes'));
-// app.use('/api/events',  require('./routes/events.routes'));
-// app.use('/api/alerts',  require('./routes/alerts.routes'));
+// ── API Routes ─────────────────────────────────────────────
+app.use('/api/auth',   require('./routes/auth.routes'));
+app.use('/api/camera', require('./routes/camera.routes'));
+app.use('/api/events', require('./routes/events.routes'));
+app.use('/api/alerts', require('./routes/alerts.routes'));
 
 // ── Global Error Handler ───────────────────────────────────
 app.use((err, req, res, next) => {
