@@ -1,12 +1,12 @@
 import React, { createContext, useState, useEffect, useCallback } from "react";
-import { login as loginService, logout as logoutService, getCurrentUser, isAuthenticated } from "../services/auth.service";
+import { register as registerService, login as loginService, logout as logoutService, getCurrentUser, isAuthenticated } from "../services/auth.service";
 
 export const AuthContext = createContext(null);
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [token, setToken] = useState(null);
-  const [loading, setLoading] = useState(true); // true while we check localStorage on mount
+  const [loading, setLoading] = useState(true);
 
   // On first load, restore session from localStorage
   useEffect(() => {
@@ -17,6 +17,22 @@ export const AuthProvider = ({ children }) => {
       setToken(storedToken);
     }
     setLoading(false);
+  }, []);
+
+  /**
+   * Register — creates account, saves token, updates state
+   * @param {Object} userData - { name, email, password, role }
+   */
+  const register = useCallback(async (userData) => {
+    const data = await registerService(userData);
+    // auth.service.register returns { success, data: { token, ...user } }
+    const token = data.data.token;
+    const userObj = { id: data.data.id, name: data.data.name, email: data.data.email, role: data.data.role };
+    localStorage.setItem("token", token);
+    localStorage.setItem("user", JSON.stringify(userObj));
+    setUser(userObj);
+    setToken(token);
+    return data;
   }, []);
 
   /**
@@ -57,6 +73,7 @@ export const AuthProvider = ({ children }) => {
     token,
     loading,
     isAuthenticated: isAuthenticated(),
+    register,
     login,
     logout,
     hasRole,

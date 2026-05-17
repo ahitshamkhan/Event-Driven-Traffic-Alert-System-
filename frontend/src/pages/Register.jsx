@@ -1,4 +1,6 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../hooks/useAuth";
 
 /* ── Feature items for branding panel ── */
 const BRAND_FEATURES = [
@@ -35,17 +37,53 @@ const DEPARTMENTS = [
 /* ══════════════════════════════════════════
    Registration Form (Left Panel)
    ══════════════════════════════════════════ */
-const RegistrationForm = () => {
-  const [fullName, setFullName] = useState("");
-  const [email, setEmail] = useState("");
-  const [badgeId, setBadgeId] = useState("");
-  const [department, setDepartment] = useState(DEPARTMENTS[0]);
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
+// Map UI department label → backend RBAC role
+const DEPARTMENT_ROLE_MAP = {
+  "Police Department":              "POLICE",
+  "NHA (National Highway Authority)": "NHA",
+  "Traffic Enforcement":            "POLICE",
+  "City Planning":                  "NHA",
+  "Emergency Services":             "POLICE",
+};
 
-  const handleSubmit = (e) => {
+const RegistrationForm = () => {
+  const { register } = useAuth();
+  const navigate = useNavigate();
+
+  const [fullName, setFullName]               = useState("");
+  const [email, setEmail]                     = useState("");
+  const [badgeId, setBadgeId]                 = useState("");
+  const [department, setDepartment]           = useState(DEPARTMENTS[0]);
+  const [password, setPassword]               = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [error, setError]                     = useState("");
+  const [loading, setLoading]                 = useState(false);
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // TODO: connect to backend
+    setError("");
+
+    if (!fullName || !email || !password) {
+      setError("Full name, email, and password are required."); return;
+    }
+    if (password !== confirmPassword) {
+      setError("Passwords do not match."); return;
+    }
+    if (password.length < 6) {
+      setError("Password must be at least 6 characters."); return;
+    }
+
+    const role = DEPARTMENT_ROLE_MAP[department] || "NHA";
+
+    try {
+      setLoading(true);
+      await register({ name: fullName, email, password, role });
+      navigate("/dashboard");
+    } catch (err) {
+      setError(err?.response?.data?.message || "Registration failed. Please try again.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -148,9 +186,21 @@ const RegistrationForm = () => {
             </div>
           </div>
 
+          {/* Error Message */}
+          {error && (
+            <div className="w-full bg-red-500/10 border border-red-500/30 rounded-lg p-3 flex items-center gap-2">
+              <span className="material-symbols-outlined text-red-500 text-[18px]">error</span>
+              <p className="text-[12px] font-medium text-red-500">{error}</p>
+            </div>
+          )}
+
           {/* Submit */}
-          <button className="w-full bg-primary-container hover:bg-inverse-primary text-white text-[14px] leading-[20px] tracking-[0.05em] font-semibold py-4 rounded-lg shadow-lg shadow-primary-container/20 transition-all transform active:scale-95" type="submit">
-            Create Account
+          <button
+            className="w-full bg-primary-container hover:bg-inverse-primary text-white text-[14px] leading-[20px] tracking-[0.05em] font-semibold py-4 rounded-lg shadow-lg shadow-primary-container/20 transition-all transform active:scale-95 disabled:opacity-60 disabled:cursor-not-allowed"
+            type="submit"
+            disabled={loading}
+          >
+            {loading ? "Creating Account..." : "Create Account"}
           </button>
 
           {/* Divider */}

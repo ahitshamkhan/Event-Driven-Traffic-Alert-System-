@@ -1,4 +1,6 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../hooks/useAuth";
 
 /* ── Feature checklist items ── */
 const FEATURES = [
@@ -69,14 +71,33 @@ const BrandingPanel = () => (
    Right Login Form
    ══════════════════════════════════════════ */
 const LoginForm = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
-  const [rememberMe, setRememberMe] = useState(false);
+  const { login } = useAuth();
+  const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
+  const [email, setEmail]             = useState("");
+  const [password, setPassword]       = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [rememberMe, setRememberMe]   = useState(false);
+  const [error, setError]             = useState("");
+  const [loading, setLoading]         = useState(false);
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // TODO: connect to backend auth
+    setError("");
+
+    if (!email || !password) {
+      setError("Email and password are required."); return;
+    }
+
+    try {
+      setLoading(true);
+      await login({ email, password });
+      navigate("/dashboard");
+    } catch (err) {
+      setError(err?.response?.data?.message || "Invalid email or password.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -147,9 +168,21 @@ const LoginForm = () => {
             <a className="text-[12px] leading-[16px] font-medium text-primary-container hover:underline" href="#">Forgot password?</a>
           </div>
 
+          {/* Error Message */}
+          {error && (
+            <div className="w-full bg-red-500/10 border border-red-500/30 rounded-lg p-3 flex items-center gap-2 mb-2">
+              <span className="material-symbols-outlined text-red-500 text-[18px]">error</span>
+              <p className="text-[12px] font-medium text-red-500">{error}</p>
+            </div>
+          )}
+
           {/* Submit */}
-          <button className="w-full bg-primary-container text-white text-[14px] leading-[20px] tracking-[0.05em] font-semibold py-3.5 rounded-lg shadow-lg shadow-primary-container/20 hover:bg-inverse-primary transition-all active:scale-[0.98]" type="submit">
-            Sign In
+          <button
+            className="w-full bg-primary-container text-white text-[14px] leading-[20px] tracking-[0.05em] font-semibold py-3.5 rounded-lg shadow-lg shadow-primary-container/20 hover:bg-inverse-primary transition-all active:scale-[0.98] disabled:opacity-60 disabled:cursor-not-allowed"
+            type="submit"
+            disabled={loading}
+          >
+            {loading ? "Signing in..." : "Sign In"}
           </button>
         </form>
 
