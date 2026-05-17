@@ -46,6 +46,10 @@ The backend directory is structured to support:
 └─ frontend/              # React UI
 ```
 
+## Prerequisites
+- Node.js 18+ and npm
+- The frontend is missing `frontend/public/index.html`. Add a CRA-style `public/` directory (or re-initialize the app) before running `npm run build`.
+
 ## Getting Started
 
 ### Frontend
@@ -88,7 +92,3 @@ These are the endpoints used by the frontend service layer:
 
 ## Notes
 - Several UI screens currently use static mock data; connect them to your API for live updates.
-- This repo does not include `frontend/public/index.html` yet. Add a standard CRA-style `public/` directory (or re-initialize the app) before running `npm run build`.
-
-## License
-No license file is included yet.
