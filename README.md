@@ -88,7 +88,7 @@ These are the endpoints used by the frontend service layer:
 
 ## Notes
 - Several UI screens currently use static mock data; connect them to your API for live updates.
-- `react-scripts build` expects a `frontend/public/index.html` file (add it when you initialize the frontend template).
+- This repo does not include `frontend/public/index.html` yet. Add a standard CRA-style `public/` directory (or re-initialize the app) before running `npm run build`.
 
 ## License
 No license file is included yet.
