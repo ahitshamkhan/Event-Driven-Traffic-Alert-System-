@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import useAuth from "../hooks/useAuth";
+import useTheme from "../hooks/useTheme";
 import API from "../services/api";
 
 /* ── Sidebar ── */
@@ -74,6 +75,7 @@ const Sidebar = () => {
 const TopNav = () => {
   const [search, setSearch] = useState("");
   const { user } = useAuth();
+  const { isDark, toggleTheme } = useTheme();
   const initials = user?.name
     ? user.name.split(" ").map((n) => n[0]).join("").toUpperCase().slice(0, 2)
     : "?";
@@ -89,8 +91,14 @@ const TopNav = () => {
         <button className="hover:bg-surface-container-high rounded-full p-2 transition-transform duration-150 active:scale-95">
           <span className="material-symbols-outlined text-on-surface-variant">notifications</span>
         </button>
-        <button className="hover:bg-surface-container-high rounded-full p-2 transition-transform duration-150 active:scale-95">
-          <span className="material-symbols-outlined text-on-surface-variant">light_mode</span>
+        <button
+          onClick={toggleTheme}
+          title={isDark ? "Switch to Light Mode" : "Switch to Dark Mode"}
+          className="hover:bg-surface-container-high rounded-full p-2 transition-transform duration-150 active:scale-95"
+        >
+          <span className="material-symbols-outlined text-on-surface-variant">
+            {isDark ? "light_mode" : "dark_mode"}
+          </span>
         </button>
         <div className="h-8 w-[1px] bg-outline-muted mx-2"></div>
         <div className="flex items-center gap-3 pl-2 cursor-pointer group">

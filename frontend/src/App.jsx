@@ -15,31 +15,36 @@ import CameraControl from "./pages/CameraControl";
 // Route guard
 import ProtectedRoute from "./components/ProtectedRoute";
 
+// Theme
+import { ThemeProvider } from "./context/ThemeContext";
+
 const App = () => {
   return (
-    <BrowserRouter>
-      <Routes>
-        {/* ── Public routes ── */}
-        <Route path="/" element={<Home />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
+    <ThemeProvider>
+      <BrowserRouter>
+        <Routes>
+          {/* ── Public routes ── */}
+          <Route path="/" element={<Home />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
 
-        {/* ── Protected routes (any authenticated user) ── */}
-        <Route element={<ProtectedRoute />}>
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/livefeed" element={<LiveFeed />} />
-          <Route path="/alerts" element={<Alerts />} />
-        </Route>
+          {/* ── Protected routes (any authenticated user) ── */}
+          <Route element={<ProtectedRoute />}>
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/livefeed" element={<LiveFeed />} />
+            <Route path="/alerts" element={<Alerts />} />
+          </Route>
 
-        {/* ── Role-restricted routes (POLICE + ADMIN only) ── */}
-        <Route element={<ProtectedRoute allowedRoles={["POLICE", "ADMIN"]} />}>
-          <Route path="/camera" element={<CameraControl />} />
-        </Route>
+          {/* ── Role-restricted routes (POLICE + ADMIN only) ── */}
+          <Route element={<ProtectedRoute allowedRoles={["POLICE", "ADMIN"]} />}>
+            <Route path="/camera" element={<CameraControl />} />
+          </Route>
 
-        {/* ── Fallback: redirect unknown paths to home ── */}
-        <Route path="*" element={<Navigate to="/" replace />} />
-      </Routes>
-    </BrowserRouter>
+          {/* ── Fallback: redirect unknown paths to home ── */}
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+      </BrowserRouter>
+    </ThemeProvider>
   );
 };
 

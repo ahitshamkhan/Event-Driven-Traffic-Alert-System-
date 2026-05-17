@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import useAuth from "../hooks/useAuth";
+import useTheme from "../hooks/useTheme";
 import API from "../services/api";
 
 /* ── Sidebar ── */
@@ -80,6 +81,7 @@ const Sidebar = () => {
 const TopNav = () => {
   const [search, setSearch] = useState("");
   const { user } = useAuth();
+  const { isDark, toggleTheme } = useTheme();
   const initials = user?.name
     ? user.name.split(" ").map((n) => n[0]).join("").toUpperCase().slice(0, 2)
     : "?";
@@ -95,8 +97,8 @@ const TopNav = () => {
         <button className="hover:bg-surface-variant rounded-full p-2 text-on-surface-variant transition-colors">
           <span className="material-symbols-outlined">notifications</span>
         </button>
-        <button className="hover:bg-surface-variant rounded-full p-2 text-on-surface-variant transition-colors">
-          <span className="material-symbols-outlined">light_mode</span>
+        <button onClick={toggleTheme} title={isDark ? "Switch to Light Mode" : "Switch to Dark Mode"} className="hover:bg-surface-variant rounded-full p-2 text-on-surface-variant transition-colors">
+          <span className="material-symbols-outlined">{isDark ? "light_mode" : "dark_mode"}</span>
         </button>
         <div className="h-8 w-[1px] bg-outline-variant mx-2"></div>
         <div className="flex items-center gap-3">
