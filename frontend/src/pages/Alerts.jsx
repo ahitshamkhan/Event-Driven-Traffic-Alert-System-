@@ -39,7 +39,7 @@ const Sidebar = () => (
       </nav>
     </div>
     <div className="px-6 space-y-4">
-      <button className="w-full bg-primary text-on-primary-fixed py-3 rounded-lg text-[12px] leading-[16px] tracking-[0.05em] font-semibold uppercase tracking-wider shadow-sm hover:opacity-90 transition-opacity">
+      <button className="w-full bg-primary text-on-primary-fixed py-3 rounded-lg text-[12px] leading-[16px] font-semibold uppercase tracking-wider shadow-sm hover:opacity-90 transition-opacity">
         <span className="material-symbols-outlined mr-2 align-middle">emergency</span>
         Report Emergency
       </button>
