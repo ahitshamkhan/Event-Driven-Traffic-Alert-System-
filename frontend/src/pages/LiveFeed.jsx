@@ -1,4 +1,6 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import useAuth from "../hooks/useAuth";
 
 /* ── Sidebar Navigation ── */
 const NAV_ITEMS = [
@@ -9,7 +11,12 @@ const NAV_ITEMS = [
   { icon: "tune", label: "Settings", href: "#" },
 ];
 
-const Sidebar = () => (
+const Sidebar = () => {
+  const { logout } = useAuth();
+  const navigate = useNavigate();
+  const handleLogout = () => { logout(); navigate("/login"); };
+
+  return (
   <aside className="fixed left-0 top-0 h-screen w-[240px] border-r border-outline-variant bg-surface-container-lowest shadow-sm flex flex-col justify-between py-6 z-50">
     <div className="flex flex-col gap-8">
       <div className="px-6 flex flex-col gap-1">
@@ -18,20 +25,10 @@ const Sidebar = () => (
       </div>
       <nav className="flex flex-col">
         {NAV_ITEMS.map((item) => (
-          <a
-            key={item.label}
-            className={
-              item.active
-                ? "flex items-center gap-4 px-6 py-3 text-primary font-bold border-r-4 border-primary bg-primary/10"
-                : "flex items-center gap-4 px-6 py-3 text-on-surface-variant hover:bg-surface-container-low hover:text-on-surface transition-colors duration-200"
-            }
-            href={item.href}
-          >
+          <a key={item.label} className={item.active ? "flex items-center gap-4 px-6 py-3 text-primary font-bold border-r-4 border-primary bg-primary/10" : "flex items-center gap-4 px-6 py-3 text-on-surface-variant hover:bg-surface-container-low hover:text-on-surface transition-colors duration-200"} href={item.href}>
             <span className="material-symbols-outlined" style={item.active ? { fontVariationSettings: "'FILL' 1" } : undefined}>{item.icon}</span>
             <span className="text-[14px] leading-[20px] tracking-[0.05em] font-semibold">{item.label}</span>
-            {item.badge && (
-              <span className="ml-auto bg-error text-on-error text-[10px] font-bold px-1.5 py-0.5 rounded-full">{item.badge}</span>
-            )}
+            {item.badge && (<span className="ml-auto bg-error text-on-error text-[10px] font-bold px-1.5 py-0.5 rounded-full">{item.badge}</span>)}
           </a>
         ))}
       </nav>
@@ -48,14 +45,15 @@ const Sidebar = () => (
           <span className="material-symbols-outlined">contact_support</span>
           <span className="text-[14px] leading-[20px] tracking-[0.05em] font-semibold">Support</span>
         </a>
-        <a className="flex items-center gap-4 px-6 py-2 text-on-surface-variant hover:bg-surface-container-low hover:text-on-surface transition-colors duration-200" href="#">
+        <button onClick={handleLogout} className="flex items-center gap-4 px-6 py-2 text-on-surface-variant hover:text-error-red hover:bg-surface-container-low transition-colors duration-200 w-full text-left">
           <span className="material-symbols-outlined">power_settings_new</span>
           <span className="text-[14px] leading-[20px] tracking-[0.05em] font-semibold">Logout</span>
-        </a>
+        </button>
       </nav>
     </div>
   </aside>
-);
+  );
+};
 
 /* ── Top Navbar ── */
 const TopNav = () => {

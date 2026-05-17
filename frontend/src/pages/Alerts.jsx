@@ -1,4 +1,6 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import useAuth from "../hooks/useAuth";
 
 /* ── Sidebar Navigation ── */
 const NAV_ITEMS = [
@@ -9,7 +11,12 @@ const NAV_ITEMS = [
   { icon: "tune", label: "Settings", href: "#" },
 ];
 
-const Sidebar = () => (
+const Sidebar = () => {
+  const { logout } = useAuth();
+  const navigate = useNavigate();
+  const handleLogout = () => { logout(); navigate("/login"); };
+
+  return (
   <aside className="fixed left-0 top-0 h-screen w-[240px] bg-surface-container-lowest border-r border-outline-variant flex flex-col justify-between py-6 z-50">
     <div>
       <div className="px-6 mb-8">
@@ -18,20 +25,10 @@ const Sidebar = () => (
       </div>
       <nav className="space-y-1">
         {NAV_ITEMS.map((item) => (
-          <a
-            key={item.label}
-            className={
-              item.active
-                ? "flex items-center px-6 py-3 text-primary font-bold border-r-4 border-primary bg-surface-container-high transition-colors duration-200"
-                : "flex items-center px-6 py-3 text-on-surface-variant hover:text-surface-bright hover:bg-surface-container-highest transition-colors duration-200"
-            }
-            href={item.href}
-          >
+          <a key={item.label} className={item.active ? "flex items-center px-6 py-3 text-primary font-bold border-r-4 border-primary bg-surface-container-high transition-colors duration-200" : "flex items-center px-6 py-3 text-on-surface-variant hover:text-surface-bright hover:bg-surface-container-highest transition-colors duration-200"} href={item.href}>
             <div className="relative mr-3">
               <span className="material-symbols-outlined">{item.icon}</span>
-              {item.badge && (
-                <span className="absolute -top-1 -right-1 bg-error-red text-on-error text-[9px] w-4 h-4 flex items-center justify-center rounded-full">{item.badge}</span>
-              )}
+              {item.badge && (<span className="absolute -top-1 -right-1 bg-error-red text-on-error text-[9px] w-4 h-4 flex items-center justify-center rounded-full">{item.badge}</span>)}
             </div>
             <span className="text-[16px] leading-[24px]">{item.label}</span>
           </a>
@@ -48,14 +45,15 @@ const Sidebar = () => (
           <span className="material-symbols-outlined mr-3">contact_support</span>
           <span className="text-[14px] leading-[20px]">Support</span>
         </a>
-        <a className="flex items-center py-2 text-on-surface-variant hover:text-error-red transition-colors" href="#">
+        <button onClick={handleLogout} className="flex items-center py-2 text-on-surface-variant hover:text-error-red transition-colors w-full text-left">
           <span className="material-symbols-outlined mr-3">power_settings_new</span>
           <span className="text-[14px] leading-[20px]">Logout</span>
-        </a>
+        </button>
       </div>
     </div>
   </aside>
-);
+  );
+};
 
 /* ── Top Navbar ── */
 const TopNav = () => {

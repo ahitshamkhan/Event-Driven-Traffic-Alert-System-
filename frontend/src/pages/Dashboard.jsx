@@ -1,4 +1,6 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import useAuth from "../hooks/useAuth";
 
 /* ── Sidebar ── */
 const NAV_ITEMS = [
@@ -9,7 +11,16 @@ const NAV_ITEMS = [
   { icon: "tune", label: "Settings", href: "#" },
 ];
 
-const Sidebar = () => (
+const Sidebar = () => {
+  const { logout } = useAuth();
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    logout();
+    navigate("/login");
+  };
+
+  return (
   <aside className="fixed left-0 top-0 h-screen w-[240px] bg-surface-container-lowest border-r border-outline-muted shadow-none flex flex-col justify-between py-6 z-50">
     <div>
       <div className="px-6 mb-8 flex items-center gap-3">
@@ -46,12 +57,17 @@ const Sidebar = () => (
       <a className="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-colors rounded-lg" href="#">
         <span className="material-symbols-outlined">contact_support</span><span className="text-[16px] leading-[24px]">Support</span>
       </a>
-      <a className="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-colors rounded-lg" href="#">
-        <span className="material-symbols-outlined">power_settings_new</span><span className="text-[16px] leading-[24px]">Logout</span>
-      </a>
+      <button
+        onClick={handleLogout}
+        className="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:text-error-red hover:bg-surface-container transition-colors rounded-lg w-full text-left"
+      >
+        <span className="material-symbols-outlined">power_settings_new</span>
+        <span className="text-[16px] leading-[24px]">Logout</span>
+      </button>
     </div>
   </aside>
-);
+  );
+};
 
 /* ── Top Nav ── */
 const TopNav = () => {

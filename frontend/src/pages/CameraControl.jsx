@@ -59,9 +59,12 @@ const Sidebar = () => (
         <a className="flex items-center gap-3 px-3 py-2 text-[16px] leading-[24px] text-on-surface-variant hover:bg-surface-variant rounded-lg" href="#">
           <span className="material-symbols-outlined">contact_support</span> Support
         </a>
-        <a className="flex items-center gap-3 px-3 py-2 text-[16px] leading-[24px] text-on-surface-variant hover:bg-surface-variant rounded-lg" href="#">
+        <button
+          onClick={() => { logout(); navigate("/login"); }}
+          className="flex items-center gap-3 px-3 py-2 text-[16px] leading-[24px] text-on-surface-variant hover:bg-surface-variant hover:text-error-red rounded-lg w-full text-left"
+        >
           <span className="material-symbols-outlined">power_settings_new</span> Logout
-        </a>
+        </button>
       </div>
     </div>
   </aside>
