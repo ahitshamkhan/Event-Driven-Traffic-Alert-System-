@@ -168,12 +168,23 @@ const RegistrationForm = () => {
               <input className="w-full bg-surface-container border border-outline-muted rounded-lg py-3 pl-10 pr-4 text-on-surface focus:ring-2 focus:ring-primary-container focus:outline-none transition-all" placeholder="••••••••" type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
             </div>
             <div className="flex gap-1 h-1.5 w-full mt-2">
-              <div className="h-full flex-1 bg-success-green rounded-full"></div>
-              <div className="h-full flex-1 bg-success-green rounded-full"></div>
-              <div className="h-full flex-1 bg-success-green rounded-full"></div>
-              <div className="h-full flex-1 bg-surface-variant rounded-full"></div>
+              {[1, 2, 3, 4].map((level) => {
+                const strength = password.length === 0 ? 0 : password.length < 6 ? 1 : password.length < 8 ? 2 : password.length < 12 ? 3 : 4;
+                return (
+                  <div
+                    key={level}
+                    className={`h-full flex-1 rounded-full transition-colors ${
+                      level <= strength
+                        ? strength === 1 ? "bg-error-red" : strength === 2 ? "bg-tertiary" : strength === 3 ? "bg-primary" : "bg-success-green"
+                        : "bg-surface-variant"
+                    }`}
+                  ></div>
+                );
+              })}
             </div>
-            <p className="text-[12px] leading-[16px] font-medium text-on-surface-variant mt-1">Excellent: 8+ chars, uppercase, number, symbol</p>
+            <p className="text-[12px] leading-[16px] font-medium text-on-surface-variant mt-1">
+              {password.length === 0 ? "Enter a password" : password.length < 6 ? "Weak: minimum 6 characters" : password.length < 8 ? "Fair: try adding numbers & symbols" : password.length < 12 ? "Good: strong password" : "Excellent: very strong password"}
+            </p>
           </div>
 
           {/* Confirm Password */}
@@ -229,7 +240,7 @@ const RegistrationForm = () => {
         <div className="mt-[32px] p-[16px] bg-primary-container/10 border border-primary-container/20 rounded-xl flex gap-[8px]">
           <span className="material-symbols-outlined text-primary-container">info</span>
           <p className="text-[12px] font-medium text-primary-container/80 leading-relaxed">
-            Security Notice: Accounts use encrypted JWT (JSON Web Tokens) for stateless authentication. MFA setup will be required on your first login.
+            Security Notice: Accounts are protected with encrypted JWT (JSON Web Tokens) for stateless authentication. Sessions expire after 24 hours.
           </p>
         </div>
       </div>

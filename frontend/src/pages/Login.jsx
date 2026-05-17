@@ -47,12 +47,12 @@ const BrandingPanel = () => (
         <p className="text-[12px] leading-[16px] font-medium text-on-surface-variant uppercase tracking-widest mb-1">Live Status</p>
         <div className="flex items-center gap-2">
           <div className="w-2.5 h-2.5 rounded-full bg-success-green pulse-green"></div>
-          <span className="text-[16px] leading-[24px] text-white font-semibold">12/12 Cameras Online</span>
+          <span className="text-[16px] leading-[24px] text-white font-semibold">All Cameras Online</span>
         </div>
       </div>
       <div className="text-right">
         <p className="text-[12px] leading-[16px] font-medium text-on-surface-variant uppercase tracking-widest mb-1">Events Today</p>
-        <span className="text-[32px] leading-[40px] font-bold text-primary tracking-tight">1,247</span>
+        <span className="text-[32px] leading-[40px] font-bold text-primary tracking-tight">Live</span>
       </div>
     </div>
 
