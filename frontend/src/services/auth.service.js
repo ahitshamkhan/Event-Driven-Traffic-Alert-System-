@@ -16,7 +16,9 @@ export const register = async (userData) => {
  */
 export const login = async (credentials) => {
   const response = await API.post("/auth/login", credentials);
-  const { token, user } = response.data;
+  // Backend returns: { success: true, data: { id, name, email, role, token } }
+  const { token, id, name, email, role } = response.data.data;
+  const user = { id, name, email, role };
 
   // Persist to localStorage so api.js interceptor can attach it
   if (token) {

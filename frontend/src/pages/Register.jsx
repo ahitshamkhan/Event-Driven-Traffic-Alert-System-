@@ -32,6 +32,7 @@ const DEPARTMENTS = [
   "Traffic Enforcement",
   "City Planning",
   "Emergency Services",
+  "System Administration (ADMIN)",
 ];
 
 /* ══════════════════════════════════════════
@@ -44,6 +45,7 @@ const DEPARTMENT_ROLE_MAP = {
   "Traffic Enforcement":            "POLICE",
   "City Planning":                  "NHA",
   "Emergency Services":             "POLICE",
+  "System Administration (ADMIN)": "ADMIN",
 };
 
 const RegistrationForm = () => {
