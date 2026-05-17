@@ -31,8 +31,8 @@ const App = () => {
           <Route path="/alerts" element={<Alerts />} />
         </Route>
 
-        {/* ── Role-restricted routes (police + admin only) ── */}
-        <Route element={<ProtectedRoute allowedRoles={["police", "admin"]} />}>
+        {/* ── Role-restricted routes (POLICE + ADMIN only) ── */}
+        <Route element={<ProtectedRoute allowedRoles={["POLICE", "ADMIN"]} />}>
           <Route path="/camera" element={<CameraControl />} />
         </Route>
 

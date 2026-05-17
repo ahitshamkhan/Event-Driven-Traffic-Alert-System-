@@ -226,7 +226,7 @@ const RegistrationForm = () => {
         {/* JWT Info Box */}
         <div className="mt-[32px] p-[16px] bg-primary-container/10 border border-primary-container/20 rounded-xl flex gap-[8px]">
           <span className="material-symbols-outlined text-primary-container">info</span>
-          <p className="text-[12px] leading-[16px] font-medium text-primary-container/80 leading-relaxed">
+          <p className="text-[12px] font-medium text-primary-container/80 leading-relaxed">
             Security Notice: Accounts use encrypted JWT (JSON Web Tokens) for stateless authentication. MFA setup will be required on your first login.
           </p>
         </div>

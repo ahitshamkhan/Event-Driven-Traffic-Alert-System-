@@ -1,4 +1,7 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import useAuth from "../hooks/useAuth";
+import API from "../services/api";
 
 /* ── Sidebar ── */
 const NAV_ITEMS = [
@@ -150,21 +153,59 @@ const CameraCard = ({ cam, onClick }) => {
    Main CameraControl Page
    ══════════════════════════════════════════ */
 const CameraControl = () => {
-  const [selectedCam, setSelectedCam] = useState("CAM-001");
+  const { user } = useAuth();
+  const navigate = useNavigate();
+
+  const [selectedCam, setSelectedCam]         = useState("CAM-001");
   const [activeEventType, setActiveEventType] = useState("Vehicle Detected");
-  const [plate, setPlate] = useState("ABC-1234");
-  const [speed, setSpeed] = useState("42");
-  const [severity, setSeverity] = useState("Medium (Standard)");
-  const [vehicleCount, setVehicleCount] = useState("12");
+  const [plate, setPlate]                     = useState("ABC-1234");
+  const [speed, setSpeed]                     = useState("42");
+  const [severity, setSeverity]               = useState("Medium (Standard)");
+  const [vehicleCount, setVehicleCount]       = useState("12");
+  const [publishing, setPublishing]           = useState(false);
+  const [successMsg, setSuccessMsg]           = useState("");
+  const [errorMsg, setErrorMsg]               = useState("");
+
+  const EVENT_TYPE_MAP = {
+    "Vehicle Detected":  "VEHICLE_DETECTED",
+    "Speed Violation":   "SPEED_VIOLATION",
+    "Congestion Alert":  "CONGESTION_ALERT",
+    "Traffic Cleared":   "TRAFFIC_CLEARED",
+  };
 
   const cameras = CAMERAS.map((c) => ({ ...c, selected: c.id === selectedCam }));
   const selectedCamera = cameras.find((c) => c.selected);
 
   const handleReset = () => {
-    setPlate("");
-    setSpeed("");
-    setSeverity("Low (Routine)");
-    setVehicleCount("");
+    setPlate(""); setSpeed(""); setSeverity("Low (Routine)"); setVehicleCount("");
+    setSuccessMsg(""); setErrorMsg("");
+  };
+
+  const handlePublish = async () => {
+    setSuccessMsg(""); setErrorMsg("");
+    if (!plate) { setErrorMsg("License plate is required."); return; }
+    try {
+      setPublishing(true);
+      const payload = {
+        eventType: EVENT_TYPE_MAP[activeEventType],
+        source: selectedCam,
+        payload: {
+          vehicleNumber: plate.toUpperCase(),
+          speed:         Number(speed) || 0,
+          limit:         80,
+          vehicleCount:  Number(vehicleCount) || 1,
+          location:      selectedCamera?.location || selectedCam,
+          severity,
+        },
+      };
+      const res = await API.post("/camera/publish", payload);
+      setSuccessMsg(`✅ Event published! ID: ${res.data.eventId}`);
+      setPlate(""); setSpeed(""); setVehicleCount("");
+    } catch (err) {
+      setErrorMsg(err?.response?.data?.message || "Failed to publish event.");
+    } finally {
+      setPublishing(false);
+    }
   };
 
   return (
@@ -289,13 +330,26 @@ const CameraControl = () => {
                 </div>
 
                 {/* Actions */}
-                <div className="mt-10 flex justify-end gap-4">
-                  <button onClick={handleReset} className="px-6 py-3 rounded-xl border border-outline-variant text-on-surface-variant font-bold text-xs uppercase tracking-wider hover:bg-surface-variant transition-all">
-                    Reset Form
-                  </button>
-                  <button className="px-10 py-3 rounded-xl bg-primary-container text-on-primary-container font-bold text-xs uppercase tracking-wider flex items-center gap-2 hover:opacity-90 active:scale-95 transition-all shadow-xl">
-                    <span className="material-symbols-outlined text-sm">send</span> Publish To Feed
-                  </button>
+                <div className="mt-10 space-y-3">
+                  {successMsg && (
+                    <div className="w-full bg-green-500/10 border border-green-500/30 rounded-lg p-3 text-green-600 text-sm font-medium">{successMsg}</div>
+                  )}
+                  {errorMsg && (
+                    <div className="w-full bg-red-500/10 border border-red-500/30 rounded-lg p-3 text-red-500 text-sm font-medium">{errorMsg}</div>
+                  )}
+                  <div className="flex justify-end gap-4">
+                    <button onClick={handleReset} className="px-6 py-3 rounded-xl border border-outline-variant text-on-surface-variant font-bold text-xs uppercase tracking-wider hover:bg-surface-variant transition-all">
+                      Reset Form
+                    </button>
+                    <button
+                      onClick={handlePublish}
+                      disabled={publishing}
+                      className="px-10 py-3 rounded-xl bg-primary-container text-on-primary-container font-bold text-xs uppercase tracking-wider flex items-center gap-2 hover:opacity-90 active:scale-95 transition-all shadow-xl disabled:opacity-60 disabled:cursor-not-allowed"
+                    >
+                      <span className="material-symbols-outlined text-sm">send</span>
+                      {publishing ? "Publishing..." : "Publish To Feed"}
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
