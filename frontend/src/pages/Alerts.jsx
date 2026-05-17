@@ -58,6 +58,10 @@ const Sidebar = () => {
 /* ── Top Navbar ── */
 const TopNav = () => {
   const [search, setSearch] = useState("");
+  const { user } = useAuth();
+  const initials = user?.name
+    ? user.name.split(" ").map((n) => n[0]).join("").toUpperCase().slice(0, 2)
+    : "?";
   return (
     <header className="fixed top-0 right-0 w-[calc(100%-240px)] h-[64px] bg-surface-container-lowest border-b border-outline-variant flex justify-between items-center px-[24px] z-40">
       <div className="flex items-center flex-1 max-w-xl">
@@ -76,10 +80,12 @@ const TopNav = () => {
         <div className="h-8 w-px bg-outline-variant mx-2"></div>
         <div className="flex items-center gap-3">
           <div className="text-right">
-            <p className="text-[12px] leading-[16px] tracking-[0.05em] font-semibold text-on-surface">Officer Chen</p>
-            <p className="text-[10px] text-outline uppercase font-bold">Shift Supervisor</p>
+            <p className="text-[12px] font-semibold text-on-surface">{user?.name || "Guest"}</p>
+            <p className="text-[10px] text-outline uppercase font-bold">{user?.role || "—"}</p>
           </div>
-          <img alt="User profile avatar" className="w-10 h-10 rounded-full border border-outline-variant shadow-sm" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDUYD9da22iXPDyi10H8R0HxRnDUQCMBAFvQ6FLC4bm4VIg6YSXmIxNpNCG7_oHDyJgi9FjuSRM0EMsPvLmZtUKFqG5SMpV4vB1AE07L5Del39-Ae4ghH5iI4e9Mts5Jfiokj_qliL6mJTz19vpzFwNV0_N2KacYaKTeRCDGT5BkIJkA98-z8iknBG9A4sban92PImlIEDGXfHWysooaqutNczyE-7oOuXMgF4AVGy34Ido5jafPkA_H3B-jXlIM4Zakyjy_CZSImg" />
+          <div className="w-10 h-10 rounded-full bg-primary-container border border-outline-variant shadow-sm flex items-center justify-center">
+            <span className="text-on-primary-container font-bold text-sm">{initials}</span>
+          </div>
         </div>
       </div>
     </header>
