@@ -3,6 +3,8 @@ import { useNavigate } from "react-router-dom";
 import useAuth from "../hooks/useAuth";
 import useTheme from "../hooks/useTheme";
 import API from "../services/api";
+import EmergencyModal from "../components/EmergencyModal";
+import SettingsModal from "../components/SettingsModal";
 
 /* ── Sidebar ── */
 const NAV_ITEMS = [
@@ -16,9 +18,12 @@ const NAV_ITEMS = [
 const Sidebar = () => {
   const { logout } = useAuth();
   const navigate = useNavigate();
+  const [showEmergency, setShowEmergency] = useState(false);
+  const [showSettings,  setShowSettings]  = useState(false);
   const handleLogout = () => { logout(); navigate("/login"); };
 
   return (
+  <>
   <aside className="fixed left-0 top-0 h-screen w-[240px] bg-surface-container border-r border-outline-variant shadow-lg flex flex-col justify-between py-6 z-50">
     <div>
       <div className="px-6 mb-8 flex items-center gap-3">
@@ -32,33 +37,27 @@ const Sidebar = () => {
       </div>
       <nav className="flex flex-col gap-1 px-3">
         {NAV_ITEMS.map((item) => {
-          if (item.active) {
-            return (
-              <a key={item.label} className="flex items-center gap-3 px-3 py-3 text-[16px] leading-[24px] text-primary-fixed-dim font-bold border-r-4 border-primary-container bg-surface-container-high rounded-lg" href={item.href}>
+          item.label === "Settings"
+            ? <button key={item.label} onClick={() => setShowSettings(true)} className="flex items-center gap-3 px-3 py-3 text-[16px] leading-[24px] text-on-surface-variant hover:bg-surface-variant transition-colors rounded-lg w-full text-left">
                 <span className="material-symbols-outlined">{item.icon}</span> {item.label}
-              </a>
-            );
-          }
-          if (item.badge) {
-            return (
-              <a key={item.label} className="flex items-center justify-between px-3 py-3 text-[16px] leading-[24px] text-on-surface-variant hover:bg-surface-variant transition-colors rounded-lg" href={item.href}>
-                <div className="flex items-center gap-3">
+              </button>
+            : item.active
+              ? <a key={item.label} className="flex items-center gap-3 px-3 py-3 text-[16px] leading-[24px] text-primary-fixed-dim font-bold border-r-4 border-primary-container bg-surface-container-high rounded-lg" href={item.href}>
                   <span className="material-symbols-outlined">{item.icon}</span> {item.label}
-                </div>
-                <span className="bg-error-container text-on-error-container text-[10px] font-bold px-1.5 rounded-full">{item.badge}</span>
-              </a>
-            );
-          }
-          return (
-            <a key={item.label} className="flex items-center gap-3 px-3 py-3 text-[16px] leading-[24px] text-on-surface-variant hover:bg-surface-variant transition-colors rounded-lg" href={item.href}>
-              <span className="material-symbols-outlined">{item.icon}</span> {item.label}
-            </a>
-          );
+                </a>
+              : item.badge
+                ? <a key={item.label} className="flex items-center justify-between px-3 py-3 text-[16px] leading-[24px] text-on-surface-variant hover:bg-surface-variant transition-colors rounded-lg" href={item.href}>
+                    <div className="flex items-center gap-3"><span className="material-symbols-outlined">{item.icon}</span> {item.label}</div>
+                    <span className="bg-error-container text-on-error-container text-[10px] font-bold px-1.5 rounded-full">{item.badge}</span>
+                  </a>
+                : <a key={item.label} className="flex items-center gap-3 px-3 py-3 text-[16px] leading-[24px] text-on-surface-variant hover:bg-surface-variant transition-colors rounded-lg" href={item.href}>
+                    <span className="material-symbols-outlined">{item.icon}</span> {item.label}
+                  </a>
         })}
       </nav>
     </div>
     <div className="px-3 flex flex-col gap-4">
-      <button className="bg-primary-container text-on-primary-container py-3 px-4 rounded-xl font-semibold text-sm flex items-center justify-center gap-2 hover:opacity-90 transition-opacity">
+      <button onClick={() => setShowEmergency(true)} className="bg-primary-container text-on-primary-container py-3 px-4 rounded-xl font-semibold text-sm flex items-center justify-center gap-2 hover:opacity-90 transition-opacity w-full">
         <span className="material-symbols-outlined">emergency</span> Report Emergency
       </button>
       <div className="flex flex-col gap-1 border-t border-outline-variant pt-4">
@@ -74,6 +73,9 @@ const Sidebar = () => {
       </div>
     </div>
   </aside>
+  <EmergencyModal isOpen={showEmergency} onClose={() => setShowEmergency(false)} />
+  <SettingsModal  isOpen={showSettings}  onClose={() => setShowSettings(false)}  />
+  </>
   );
 };
 

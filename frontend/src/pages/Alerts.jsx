@@ -3,6 +3,8 @@ import { useNavigate } from "react-router-dom";
 import useAuth from "../hooks/useAuth";
 import useTheme from "../hooks/useTheme";
 import API from "../services/api";
+import EmergencyModal from "../components/EmergencyModal";
+import SettingsModal from "../components/SettingsModal";
 
 /* ── Sidebar Navigation ── */
 const NAV_ITEMS = [
@@ -16,9 +18,12 @@ const NAV_ITEMS = [
 const Sidebar = () => {
   const { logout } = useAuth();
   const navigate   = useNavigate();
+  const [showEmergency, setShowEmergency] = useState(false);
+  const [showSettings,  setShowSettings]  = useState(false);
   const handleLogout = () => { logout(); navigate("/login"); };
 
   return (
+  <>
   <aside className="fixed left-0 top-0 h-screen w-[240px] bg-surface-container-lowest border-r border-outline-variant flex flex-col justify-between py-6 z-50">
     <div>
       <div className="px-6 mb-8">
@@ -27,15 +32,20 @@ const Sidebar = () => {
       </div>
       <nav className="space-y-1">
         {NAV_ITEMS.map((item) => (
-          <a key={item.label} className={item.active ? "flex items-center px-6 py-3 text-primary font-bold border-r-4 border-primary bg-surface-container-high transition-colors duration-200" : "flex items-center px-6 py-3 text-on-surface-variant hover:text-surface-bright hover:bg-surface-container-highest transition-colors duration-200"} href={item.href}>
-            <span className="material-symbols-outlined mr-3">{item.icon}</span>
-            <span className="text-[16px] leading-[24px]">{item.label}</span>
-          </a>
+          item.label === "Settings"
+            ? <button key={item.label} onClick={() => setShowSettings(true)} className="flex items-center px-6 py-3 text-on-surface-variant hover:text-surface-bright hover:bg-surface-container-highest transition-colors duration-200 w-full text-left">
+                <span className="material-symbols-outlined mr-3">{item.icon}</span>
+                <span className="text-[16px] leading-[24px]">{item.label}</span>
+              </button>
+            : <a key={item.label} className={item.active ? "flex items-center px-6 py-3 text-primary font-bold border-r-4 border-primary bg-surface-container-high transition-colors duration-200" : "flex items-center px-6 py-3 text-on-surface-variant hover:text-surface-bright hover:bg-surface-container-highest transition-colors duration-200"} href={item.href}>
+                <span className="material-symbols-outlined mr-3">{item.icon}</span>
+                <span className="text-[16px] leading-[24px]">{item.label}</span>
+              </a>
         ))}
       </nav>
     </div>
     <div className="px-6 space-y-4">
-      <button className="w-full bg-primary text-on-primary-fixed py-3 rounded-lg text-[12px] leading-[16px] font-semibold uppercase tracking-wider shadow-sm hover:opacity-90 transition-opacity">
+      <button onClick={() => setShowEmergency(true)} className="w-full bg-primary text-on-primary-fixed py-3 rounded-lg text-[12px] leading-[16px] font-semibold uppercase tracking-wider shadow-sm hover:opacity-90 transition-opacity">
         <span className="material-symbols-outlined mr-2 align-middle">emergency</span>
         Report Emergency
       </button>
@@ -51,6 +61,9 @@ const Sidebar = () => {
       </div>
     </div>
   </aside>
+  <EmergencyModal isOpen={showEmergency} onClose={() => setShowEmergency(false)} />
+  <SettingsModal  isOpen={showSettings}  onClose={() => setShowSettings(false)}  />
+  </>
   );
 };
 

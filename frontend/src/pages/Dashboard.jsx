@@ -3,6 +3,8 @@ import { useNavigate } from "react-router-dom";
 import useAuth from "../hooks/useAuth";
 import useTheme from "../hooks/useTheme";
 import API from "../services/api";
+import EmergencyModal from "../components/EmergencyModal";
+import SettingsModal from "../components/SettingsModal";
 
 /* ── Sidebar ── */
 const NAV_ITEMS = [
@@ -16,6 +18,8 @@ const NAV_ITEMS = [
 const Sidebar = () => {
   const { logout } = useAuth();
   const navigate = useNavigate();
+  const [showEmergency, setShowEmergency] = useState(false);
+  const [showSettings,  setShowSettings]  = useState(false);
 
   const handleLogout = () => {
     logout();
@@ -23,6 +27,7 @@ const Sidebar = () => {
   };
 
   return (
+  <>
   <aside className="fixed left-0 top-0 h-screen w-[240px] bg-surface-container-lowest border-r border-outline-muted shadow-none flex flex-col justify-between py-6 z-50">
     <div>
       <div className="px-6 mb-8 flex items-center gap-3">
@@ -36,24 +41,21 @@ const Sidebar = () => {
       </div>
       <nav className="flex flex-col px-3 gap-1">
         {NAV_ITEMS.map((item) => (
-          <a
-            key={item.label}
-            className={
-              item.active
-                ? "flex items-center gap-3 px-3 py-3 text-primary font-bold border-r-4 border-primary bg-surface-container-low transition-colors duration-200"
-                : "flex items-center gap-3 px-3 py-3 text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-colors duration-200"
-            }
-            href={item.href}
-          >
-            <span className="material-symbols-outlined" style={item.filled ? { fontVariationSettings: '"FILL" 1' } : undefined}>{item.icon}</span>
-            <span className="text-[16px] leading-[24px]">{item.label}</span>
-            {item.badge && <span className="ml-auto bg-error-container text-on-error-container text-[10px] font-bold px-1.5 py-0.5 rounded-full">{item.badge}</span>}
-          </a>
+          item.label === "Settings"
+            ? <button key={item.label} onClick={() => setShowSettings(true)} className="flex items-center gap-3 px-3 py-3 text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-colors duration-200 w-full text-left rounded-lg">
+                <span className="material-symbols-outlined">{item.icon}</span>
+                <span className="text-[16px] leading-[24px]">{item.label}</span>
+              </button>
+            : <a key={item.label} className={item.active ? "flex items-center gap-3 px-3 py-3 text-primary font-bold border-r-4 border-primary bg-surface-container-low transition-colors duration-200" : "flex items-center gap-3 px-3 py-3 text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-colors duration-200"} href={item.href}>
+                <span className="material-symbols-outlined" style={item.filled ? { fontVariationSettings: '"FILL" 1' } : undefined}>{item.icon}</span>
+                <span className="text-[16px] leading-[24px]">{item.label}</span>
+                {item.badge && <span className="ml-auto bg-error-container text-on-error-container text-[10px] font-bold px-1.5 py-0.5 rounded-full">{item.badge}</span>}
+              </a>
         ))}
       </nav>
     </div>
     <div className="flex flex-col gap-1 px-3">
-      <button className="mb-4 bg-primary-container text-on-primary-container py-3 px-4 rounded-xl text-[14px] leading-[20px] tracking-[0.05em] font-semibold flex items-center justify-center gap-2 active:opacity-80 transition-opacity">
+      <button onClick={() => setShowEmergency(true)} className="mb-4 bg-primary-container text-on-primary-container py-3 px-4 rounded-xl text-[14px] leading-[20px] tracking-[0.05em] font-semibold flex items-center justify-center gap-2 active:opacity-80 transition-opacity hover:opacity-90 w-full">
         <span className="material-symbols-outlined">warning</span> Report Emergency
       </button>
       <a className="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-colors rounded-lg" href="#">
@@ -68,6 +70,9 @@ const Sidebar = () => {
       </button>
     </div>
   </aside>
+  <EmergencyModal isOpen={showEmergency} onClose={() => setShowEmergency(false)} />
+  <SettingsModal  isOpen={showSettings}  onClose={() => setShowSettings(false)}  />
+  </>
   );
 };
 
