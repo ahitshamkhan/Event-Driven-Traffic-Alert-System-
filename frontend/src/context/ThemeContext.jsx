@@ -8,20 +8,20 @@ export const ThemeProvider = ({ children }) => {
     return localStorage.getItem("theme") || "dark";
   });
 
-  // Apply or remove the "dark" class on <html> whenever theme changes
+  // Apply theme class on <html> whenever theme changes
+  // Strategy: :root is always dark (base), we ADD "light" class to override it
   useEffect(() => {
     const root = document.documentElement;
-    if (theme === "dark") {
-      root.classList.add("dark");
-    } else {
+    if (theme === "light") {
+      root.classList.add("light");
       root.classList.remove("dark");
+    } else {
+      root.classList.add("dark");
+      root.classList.remove("light");
     }
     localStorage.setItem("theme", theme);
   }, [theme]);
 
-  /**
-   * Toggle between dark and light mode
-   */
   const toggleTheme = useCallback(() => {
     setTheme((prev) => (prev === "dark" ? "light" : "dark"));
   }, []);
