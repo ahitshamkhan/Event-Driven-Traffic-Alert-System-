@@ -236,7 +236,7 @@ const Alerts = () => (
               <h3 className="text-[24px] leading-[32px] font-semibold mb-2">Review Protocol</h3>
               <p className="text-[14px] leading-[20px] opacity-90 mb-4">All &quot;PENDING&quot; violations must be visually verified within 4 hours to comply with municipal legal requirements.</p>
             </div>
-            <button className="bg-white text-secondary text-[12px] leading-[16px] tracking-[0.05em] font-semibold py-3 rounded-lg uppercase tracking-widest font-bold hover:bg-opacity-90 transition-all shadow-md">
+            <button className="bg-white text-secondary text-[12px] leading-[16px] py-3 rounded-lg uppercase tracking-widest font-bold hover:bg-opacity-90 transition-all shadow-md">
               Verification Dashboard
             </button>
           </div>
